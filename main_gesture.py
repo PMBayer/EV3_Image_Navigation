@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
 import socket
-import ev3_hand_detection as gesture
-import green_ball_tracking as ball
+import sys
 
 # HOST INFO
 HOST = '192.168.0.144'
@@ -25,9 +23,6 @@ def create_client_socket():
 
 def main():
     client_socket = create_client_socket()
-
-    while True:
-        pass
 
 
 if __name__ == "__main__":
