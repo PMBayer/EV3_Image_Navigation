@@ -65,22 +65,19 @@ def capture():
         thresh_left = 100
         thresh_right = 100
 
-        if cv.waitKey(1) == 27:
-            break  # Wait for Esc
-
-        return evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
+        evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
 
 
 def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right):
     if (brightness_left > thresh_left) and (brightness_right > thresh_right):
         print("Both Hands")
-        return 2
     if (brightness_left > thresh_left) and (brightness_right < thresh_right):
         print("Right Hand")
-        return 4
     if (brightness_left < thresh_left) and (brightness_right > thresh_right):
         print("Left Hand")
-        return 3
     if (brightness_left < thresh_left) and (brightness_right < thresh_right):
         print("No Hand")
-        return 1
+
+
+if __name__ == "__main__":
+    capture()
