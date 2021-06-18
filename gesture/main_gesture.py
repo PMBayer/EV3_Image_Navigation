@@ -24,10 +24,10 @@ def create_client_socket():
 
 def main():
     client_socket = create_client_socket()
-    data = gesture.capture()
 
     while True:
-        client_socket.send(str(data).encode())
+        data = gesture.capture()
+        client_socket.send(str(data).encode('utf8'))
 
 
 if __name__ == "__main__":

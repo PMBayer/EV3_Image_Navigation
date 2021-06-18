@@ -65,21 +65,36 @@ def capture():
         thresh_left = 100
         thresh_right = 100
 
-        evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
+        last_data = 0
+        current_data = evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
+
+        if current_data != last_data:
+            last_data = current_data
+            return current_data
+        else:
+            continue
 
         if cv.waitKey(1) == 27:
             break  # Wait for Esc
 
 
 def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right):
+    # drive forward
     if (brightness_left > thresh_left) and (brightness_right > thresh_right):
         print("Both Hands")
+        return 1
+    # steer right
     if (brightness_left > thresh_left) and (brightness_right < thresh_right):
         print("Right Hand")
+        return 2
+    # steer left
     if (brightness_left < thresh_left) and (brightness_right > thresh_right):
         print("Left Hand")
+        return 3
+    # dont drive
     if (brightness_left < thresh_left) and (brightness_right < thresh_right):
         print("No Hand")
+        return 4
 
 
 if __name__ == "__main__":
