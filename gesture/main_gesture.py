@@ -2,6 +2,7 @@
 
 import socket
 import sys
+import ev3_hand_detection as gesture
 
 # HOST INFO
 HOST = '192.168.0.144'
@@ -23,6 +24,10 @@ def create_client_socket():
 
 def main():
     client_socket = create_client_socket()
+    data = gesture.capture()
+
+    while True:
+        client_socket.send(str(data).encode())
 
 
 if __name__ == "__main__":

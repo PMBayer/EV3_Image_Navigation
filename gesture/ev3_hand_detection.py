@@ -46,8 +46,10 @@ def capture():
         if Debug:
             cv.imshow("Skin", mask_img)
 
-        cv.rectangle(frame, (int(0.1 * width), int(0.6 * height)), (int(0.25 * width), int(0.8 * height)), (0, 255, 0), 3)
-        cv.rectangle(frame, (int(0.75 * width), int(0.6 * height)), (int(0.9 * width), int(0.8 * height)), (0, 255, 0), 3)
+        cv.rectangle(frame, (int(0.1 * width), int(0.6 * height)), (int(0.25 * width), int(0.8 * height)), (0, 255, 0),
+                     3)
+        cv.rectangle(frame, (int(0.75 * width), int(0.6 * height)), (int(0.9 * width), int(0.8 * height)), (0, 255, 0),
+                     3)
         cv.imshow("Video", frame)  # Anzeige des Videoframes
 
         img_left = mask_img[int(0.6 * height):int(0.8 * height), int(0.1 * width):int(0.25 * width)]
@@ -62,19 +64,23 @@ def capture():
         # Decision Rule
         thresh_left = 100
         thresh_right = 100
-        evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
 
         if cv.waitKey(1) == 27:
             break  # Wait for Esc
+
+        return evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
 
 
 def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right):
     if (brightness_left > thresh_left) and (brightness_right > thresh_right):
         print("Both Hands")
+        return 2
     if (brightness_left > thresh_left) and (brightness_right < thresh_right):
         print("Right Hand")
+        return 4
     if (brightness_left < thresh_left) and (brightness_right > thresh_right):
         print("Left Hand")
+        return 3
     if (brightness_left < thresh_left) and (brightness_right < thresh_right):
         print("No Hand")
-
+        return 1
