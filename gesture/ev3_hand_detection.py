@@ -67,6 +67,9 @@ def capture():
 
         evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
 
+        if cv.waitKey(1) == 27:
+            break  # Wait for Esc
+
 
 def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right):
     if (brightness_left > thresh_left) and (brightness_right > thresh_right):
