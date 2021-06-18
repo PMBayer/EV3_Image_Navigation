@@ -110,3 +110,4 @@ else:
     vs.release()
 # close all windows
 cv2.destroyAllWindows()
+
