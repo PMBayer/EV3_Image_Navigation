@@ -2,9 +2,6 @@
 
 import socket
 import sys
-
-import cv2
-import cv2 as cv
 import ev3_hand_detection as gesture
 
 # HOST INFO
@@ -27,13 +24,12 @@ def send(cmd):
 
 
 def main():
-    cap = cv2.VideoCapture(0)
     client_socket.connect((HOST, PORT))
     debug_print('CLIENT CONNECTED TO SERVER!')
 
     while True:
         # data = client_socket.recv(1024)
-        data = gesture.capture(cap)
+        data = gesture.capture()
         send(data)
         # client_socket.send(data.encode('utf8'))
         # client_socket.send(str(data).encode('utf8'))

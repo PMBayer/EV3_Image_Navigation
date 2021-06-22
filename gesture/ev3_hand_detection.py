@@ -2,7 +2,6 @@
 
 import cv2 as cv
 import numpy as np
-from cv2 import norm
 
 Debug = True
 
@@ -64,18 +63,18 @@ def capture(cap):
         # Decision Rule
         thresh_left = 100
         thresh_right = 100
+
         if cv.waitKey(1) == 27:
             break  # Wait for Esc
 
-        # last_data = 0
-        # current data is
-        return evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
-        #
-        # if current_data != last_data:
-        #     last_data = current_data
-        #     return current_data
-        # else:
-        #     return
+        former_data = ''
+        current_data = evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
+
+        if update(former_data, current_data):
+            former_data = current_data
+            return current_data
+        else:
+            continue
 
 
 def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right):
@@ -96,6 +95,12 @@ def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_r
         print("No Hand")
         return '4'
 
+
+def update(former_data, current_data):
+    if former_data != current_data:
+        return True
+    else:
+        return False
 
 # if __name__ == "__main__":
 #     capture()
