@@ -27,8 +27,8 @@ def skin_mask(img):
     return thresh
 
 
-def capture():
-    cap = cv.VideoCapture(0)
+def capture(cap):
+    # cap = cv.VideoCapture(0)
     if cap.isOpened():
         print("Capturing ...")
     else:
