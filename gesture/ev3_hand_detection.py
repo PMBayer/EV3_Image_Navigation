@@ -71,6 +71,7 @@ def capture():
         current_data = evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
 
         if update(former_data, current_data):
+            former_data = current_data
             return current_data
         else:
             continue
