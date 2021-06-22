@@ -28,6 +28,8 @@ def skin_mask(img):
 
 def capture(cap):
     # cap = cv.VideoCapture(0)
+    loop_counter = 0
+    data = []
     if cap.isOpened():
         print("Capturing ...")
     else:
@@ -67,40 +69,43 @@ def capture(cap):
         if cv.waitKey(1) == 27:
             break  # Wait for Esc
 
-        former_data = ''
-        current_data = evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right)
+        data.append(evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right))
 
-        if update(former_data, current_data):
-            former_data = current_data
-            return current_data
+        if update(data, loop_counter):
+            return data[loop_counter]
         else:
             continue
+
+        loop_counter += 1
 
 
 def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right):
     # drive forward
     if (brightness_left > thresh_left) and (brightness_right > thresh_right):
         print("Both Hands")
-        return '1'
+        return 'forward'
     # steer right
     elif (brightness_left > thresh_left) and (brightness_right < thresh_right):
         print("Right Hand")
-        return '2'
+        return 'right'
     # steer left
     elif (brightness_left < thresh_left) and (brightness_right > thresh_right):
         print("Left Hand")
-        return '3'
+        return 'left'
     # dont drive
     elif (brightness_left < thresh_left) and (brightness_right < thresh_right):
         print("No Hand")
-        return '4'
+        return 'stop'
 
 
-def update(former_data, current_data):
-    if former_data != current_data:
-        return True
+def update(data, counter):
+    if counter != 0:
+        if data[counter] != data[counter - 1]:
+            return True
+        else:
+            return False
     else:
-        return False
+        return True
 
 # if __name__ == "__main__":
 #     capture()
