@@ -2,6 +2,7 @@
 
 import socket
 import sys
+
 import ev3_hand_detection as gesture
 
 # HOST INFO
@@ -10,13 +11,9 @@ PORT = 5000
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
-
 # Debug Print
 def debug_print(*args, **kwargs):
     print(*args, **kwargs, file=sys.stderr)
-
-
-    return client_socket
 
 
 def send(cmd):
