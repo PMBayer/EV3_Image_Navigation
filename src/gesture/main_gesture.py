@@ -29,11 +29,8 @@ def main():
     debug_print('CLIENT CONNECTED TO SERVER!')
 
     while True:
-        # data = client_socket.recv(1024)
         data = gesture.capture(cap)
         send(data)
-        # client_socket.send(data.encode('utf8'))
-        # client_socket.send(str(data).encode('utf8'))
         data = client_socket.recv(1024)
 
 
