@@ -27,9 +27,7 @@ def skin_mask(img):
 
 
 def capture(cap):
-    # cap = cv.VideoCapture(0)
-    loop_counter = 0
-    data = []
+    # Setting up the camera; Tests its functionality
     if cap.isOpened():
         print("Capturing ...")
     else:
@@ -41,71 +39,81 @@ def capture(cap):
             break
 
         height, width = frame.shape[:2]
-        # print(width," x ", height)
 
+        # shows an additional window with the masked skin;
         mask_img = skin_mask(frame)
         if Debug:
             cv.imshow("Skin", mask_img)
 
+        # Draw the rectangles to mark positions;
         cv.rectangle(frame, (int(0.1 * width), int(0.6 * height)), (int(0.25 * width), int(0.8 * height)), (0, 255, 0),
                      3)
         cv.rectangle(frame, (int(0.75 * width), int(0.6 * height)), (int(0.9 * width), int(0.8 * height)), (0, 255, 0),
                      3)
+        cv.rectangle(frame, (int(0.425 * width), int(0.2 * height)), (int(0.575 * width), int(0.4 * height)),
+                     (0, 255, 0), 3)
+
         cv.imshow("Video", frame)  # Anzeige des Videoframes
 
+        # Masking the Image;
         img_left = mask_img[int(0.6 * height):int(0.8 * height), int(0.1 * width):int(0.25 * width)]
         img_right = mask_img[int(0.6 * height):int(0.8 * height), int(0.75 * width):int(0.9 * width)]
+        img_upper = mask_img[int(0.2 * height): int(0.4 * height), int(0.425 * width): int(0.575 * height)]
 
+        # setting up the variables for decision tree; These variables contain the brightness values
+        # of those parts of the image which are marked by the rectangles
         brightness_left = compute_brightness(img_left)
         brightness_right = compute_brightness(img_right)
+        brightness_upper = compute_brightness(img_upper)
 
+        # logging the brightness values for debugging purposes
         if Debug:
-            print("Left:", brightness_left, "Right:", brightness_right)
+            print("Left:", brightness_left, "Right:", brightness_right, "Upper:", brightness_upper)
 
         # Decision Rule
         thresh_left = 100
         thresh_right = 100
+        thresh_upper = 100
 
-        if cv.waitKey(1) == 27:
-            break  # Wait for Esc
-
-        data.append(evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right))
-
-        if update(data, loop_counter):
-            return data[loop_counter]
-        else:
-            continue
-
-        loop_counter += 1
+        return (evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right, brightness_upper,
+                                    thresh_upper))
 
 
-def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right):
+def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right, brightness_upper, thresh_upper):
     # drive forward
-    if (brightness_left > thresh_left) and (brightness_right > thresh_right):
+    if cv.waitKey(1) == 27:
+        print("End of session")
+        return 'end'
+    elif (brightness_left > thresh_left) and (brightness_right > thresh_right) and (brightness_upper < thresh_upper):
         print("Both Hands")
         return 'forward'
+    # drive backward
+    elif brightness_upper > thresh_upper:
+        print("Upper")
+        return 'backward'
     # steer right
-    elif (brightness_left > thresh_left) and (brightness_right < thresh_right):
+    elif (brightness_left > thresh_left) and (brightness_right < thresh_right) and (brightness_upper < thresh_upper):
         print("Right Hand")
         return 'right'
     # steer left
-    elif (brightness_left < thresh_left) and (brightness_right > thresh_right):
+    elif (brightness_left < thresh_left) and (brightness_right > thresh_right) and (brightness_upper < thresh_upper):
         print("Left Hand")
         return 'left'
     # dont drive
-    elif (brightness_left < thresh_left) and (brightness_right < thresh_right):
+    elif (brightness_left < thresh_left) and (brightness_right < thresh_right) and (brightness_upper < thresh_upper):
         print("No Hand")
         return 'stop'
 
 
-def update(data, counter):
-    if counter != 0:
-        if data[counter] != data[counter - 1]:
-            return True
-        else:
-            return False
-    else:
-        return True
+# # only sending data if it has changed; comparing last and current identified command
+# def update(data, counter):
+#     if counter != 0:
+#         if data[counter] != data[counter - 1]:
+#             return True
+#         else:
+#             return False
+#     else:
+#         return True
 
 # if __name__ == "__main__":
 #     capture()
