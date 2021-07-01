@@ -8,6 +8,26 @@ from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QHBoxLayout, QWid
 import gui_errors as err
 
 
+# Method; manages clicks on the gesture button
+# if ip or port are empty throws no_input_error
+# else start ev3 navigation by gesture
+def click_gesture(ip, port):
+    if ip == '' or port == '':
+        err.no_input_error()
+    else:
+        port = int(port)
+
+
+# Method; manages clicks on the gesture button
+# if ip or port are empty throws no_input_error
+# else start ev3 navigation by ball tracking
+def click_ball(ip, port):
+    if ip == '' or port == '':
+        err.no_input_error()
+    else:
+        port = int(port)
+
+
 class Window(QWidget):
     def __init__(self):
         super().__init__()
@@ -16,10 +36,10 @@ class Window(QWidget):
     # noinspection PyAttributeOutsideInit
     def init_ui(self):
         # general window settings
-        self.resize(500, 500)
+        self.resize(250, 250)
         self.setWindowTitle('EV3 Image Navigation')
 
-        # title hbox
+        # HBox containing the title and everything associated with it
         self.title_hbox = QHBoxLayout()
         self.title_hbox.setAlignment(Qt.AlignTop)
         self.title_label = QLabel('Totally Awesome EV3 Image Navigation')
@@ -27,7 +47,7 @@ class Window(QWidget):
         self.title_label.setFont(QFont('Arial', 15))
         self.title_hbox.addWidget(self.title_label)
 
-        # HBox for IP
+        # HBox containing everything related to the IP
         self.hbox_ip = QHBoxLayout()
         self.hbox_ip.setAlignment(Qt.AlignCenter)
         self.label_ip = QLabel('IP: ')
@@ -35,7 +55,7 @@ class Window(QWidget):
         self.hbox_ip.addWidget(self.label_ip)
         self.hbox_ip.addWidget(self.input_ip)
 
-        # HBox for Port
+        # HBox containing everything related to the Port
         self.hbox_port = QHBoxLayout()
         self.hbox_port.setAlignment(Qt.AlignCenter)
         self.label_port = QLabel('Port: ')
@@ -44,7 +64,7 @@ class Window(QWidget):
         self.hbox_port.addWidget(self.label_port)
         self.hbox_port.addWidget(self.input_port)
 
-        # HBox for Button to choose, which Version
+        # HBox for Button to choose, which Version of the Program to run
         self.hbox_Buttons = QHBoxLayout()
         self.hbox_Buttons.setAlignment(Qt.AlignCenter)
         self.btn_gesture = QPushButton('Gesture')
@@ -63,20 +83,8 @@ class Window(QWidget):
         self.setLayout(self.general_vbox)
 
         # Button on Click Events
-        self.btn_gesture.clicked.connect(lambda: self.click_gesture(self.input_ip.text(), self.input_port.text()))
-        self.btn_ball.clicked.connect(lambda: self.click_ball(self.input_ip.text(), self.input_port.text()))
-
-    def click_gesture(self, ip, port):
-        if ip == '' or port == '':
-            err.no_input_error()
-        else:
-            port = int(port)
-
-    def click_ball(self, ip, port):
-        if ip == '' or port == '':
-            err.no_input_error()
-        else:
-            port = int(port)
+        self.btn_gesture.clicked.connect(lambda: click_gesture(self.input_ip.text(), self.input_port.text()))
+        self.btn_ball.clicked.connect(lambda: click_ball(self.input_ip.text(), self.input_port.text()))
 
 
 def main():

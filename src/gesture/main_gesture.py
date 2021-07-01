@@ -22,6 +22,7 @@ def send(cmd):
     client_socket.sendall(bytes(cmd.encode('utf8')))
 
 
+# Main Method... duh :)
 def main():
     # Setting up the camera
     cap = cv2.VideoCapture(0)
@@ -30,9 +31,9 @@ def main():
     client_socket.connect((HOST, PORT))
     debug_print('CLIENT CONNECTED TO SERVER!')
 
-    # if branch: The data is sent for an indefinite period of time until it recieves the closing signal;
-    # else branch:for cleaning up purposes; Cleanly shutting down the client and closing active windows opened by the
-    # programm; Sending closing signal to server
+    # if branch: The data is sent for an indefinite period of time until it receives the closing signal;
+    # else branch: for cleaning up purposes; Cleanly shutting down the client and closing active windows opened by the
+    # program; Sending closing signal to server
     while True:
         data = gesture.capture(cap)
         if data != 'end':

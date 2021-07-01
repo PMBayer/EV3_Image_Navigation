@@ -3,9 +3,12 @@
 import cv2 as cv
 import numpy as np
 
-Debug = True
+Debug = True  # Only relevant for debugging; turns on debug mode
 
 
+# Method to compute the brightness of an image
+# using the euclidean norm
+# returns the brightness value of an Image
 def compute_brightness(img):
     if len(img.shape) == 3:
         # Colored RGB or BGR (*Do Not* use HSV images with this function)
@@ -16,6 +19,7 @@ def compute_brightness(img):
         return np.average(img)
 
 
+# Method; that creates the skin mask of a given image
 def skin_mask(img):
     hsvim = cv.cvtColor(img, cv.COLOR_BGR2HSV)
     lower = np.array([0, 48, 80], dtype="uint8")
@@ -26,6 +30,8 @@ def skin_mask(img):
     return thresh
 
 
+# Method; to start the capture process
+# Method uses cv2.VideoCapture
 def capture(cap):
     # Setting up the camera; Tests its functionality
     if cap.isOpened():
@@ -79,11 +85,14 @@ def capture(cap):
                                     thresh_upper))
 
 
+# Method: to evaluate the thresholds of an image mask
+# returns: drive commands according to the evaluated thresholds
 def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right, brightness_upper, thresh_upper):
-    # drive forward
+    # press ESC to end the session
     if cv.waitKey(1) == 27:
         print("End of session")
         return 'end'
+    # drive forward
     elif (brightness_left > thresh_left) and (brightness_right > thresh_right) and (brightness_upper < thresh_upper):
         print("Both Hands")
         return 'forward'
@@ -103,7 +112,6 @@ def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_r
     elif (brightness_left < thresh_left) and (brightness_right < thresh_right) and (brightness_upper < thresh_upper):
         print("No Hand")
         return 'stop'
-
 
 # # only sending data if it has changed; comparing last and current identified command
 # def update(data, counter):
