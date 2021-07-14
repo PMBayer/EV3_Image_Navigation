@@ -2,6 +2,7 @@
 
 import cv2 as cv
 import numpy as np
+from control_enum import Command as Cmd
 
 Debug = True  # Only relevant for debugging; turns on debug mode
 
@@ -49,22 +50,29 @@ def capture(cap):
         # shows an additional window with the masked skin;
         mask_img = skin_mask(frame)
         if Debug:
-            cv.imshow("Skin", mask_img)
+            cv.imshow("Skin", cv.flip(mask_img, 1))
 
         # Draw the rectangles to mark positions;
-        cv.rectangle(frame, (int(0.1 * width), int(0.6 * height)), (int(0.25 * width), int(0.8 * height)), (0, 255, 0),
-                     3)
-        cv.rectangle(frame, (int(0.75 * width), int(0.6 * height)), (int(0.9 * width), int(0.8 * height)), (0, 255, 0),
-                     3)
-        cv.rectangle(frame, (int(0.425 * width), int(0.2 * height)), (int(0.575 * width), int(0.4 * height)),
+        cv.rectangle(frame,  # left
+                     (int(0.1 * width), int(0.6 * height)),
+                     (int(0.25 * width), int(0.8 * height)),
+                     (0, 255, 0), 3)
+        cv.rectangle(frame,  # right
+                     (int(0.75 * width), int(0.6 * height)),
+                     (int(0.9 * width), int(0.8 * height)),
+                     (0, 255, 0), 3)
+        cv.rectangle(frame,  # up
+                     (int(0.425 * width), int(0.2 * height)),
+                     (int(0.575 * width), int(0.4 * height)),
                      (0, 255, 0), 3)
 
-        cv.imshow("Video", frame)  # Anzeige des Videoframes
+        # Anzeige des Videoframes, um die Y-Achse gespiegelt, sodass man einfacher stuern kann
+        cv.imshow("Video", cv.flip(frame, 1))
 
         # Masking the Image;
         img_left = mask_img[int(0.6 * height):int(0.8 * height), int(0.1 * width):int(0.25 * width)]
         img_right = mask_img[int(0.6 * height):int(0.8 * height), int(0.75 * width):int(0.9 * width)]
-        img_upper = mask_img[int(0.2 * height): int(0.4 * height), int(0.425 * width): int(0.575 * height)]
+        img_upper = mask_img[int(0.2 * height): int(0.4 * height), int(0.425 * width): int(0.575 * width)]
 
         # setting up the variables for decision tree; These variables contain the brightness values
         # of those parts of the image which are marked by the rectangles
@@ -81,37 +89,40 @@ def capture(cap):
         thresh_right = 100
         thresh_upper = 100
 
-        return (evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right, brightness_upper,
-                                    thresh_upper))
+        return evaluate_thresholds(
+            brightness_left, brightness_right, brightness_upper,
+            thresh_left, thresh_right, thresh_upper
+        ).value
 
 
 # Method: to evaluate the thresholds of an image mask
 # returns: drive commands according to the evaluated thresholds
-def evaluate_thresholds(brightness_left, brightness_right, thresh_left, thresh_right, brightness_upper, thresh_upper):
+def evaluate_thresholds(brightness_left, brightness_right, brightness_upper,
+                        thresh_left, thresh_right, thresh_upper) -> Cmd:
     # press ESC to end the session
     if cv.waitKey(1) == 27:
         print("End of session")
-        return 'end'
+        return Cmd.END
     # drive forward
     elif (brightness_left > thresh_left) and (brightness_right > thresh_right) and (brightness_upper < thresh_upper):
         print("Both Hands")
-        return 'forward'
+        return Cmd.FORWARD
     # drive backward
     elif brightness_upper > thresh_upper:
         print("Upper")
-        return 'backward'
+        return Cmd.BACKWARD
     # steer right
     elif (brightness_left > thresh_left) and (brightness_right < thresh_right) and (brightness_upper < thresh_upper):
         print("Right Hand")
-        return 'right'
+        return Cmd.RIGHT
     # steer left
     elif (brightness_left < thresh_left) and (brightness_right > thresh_right) and (brightness_upper < thresh_upper):
         print("Left Hand")
-        return 'left'
+        return Cmd.LEFT
     # dont drive
     elif (brightness_left < thresh_left) and (brightness_right < thresh_right) and (brightness_upper < thresh_upper):
         print("No Hand")
-        return 'stop'
+        return Cmd.STOP
 
 # # only sending data if it has changed; comparing last and current identified command
 # def update(data, counter):

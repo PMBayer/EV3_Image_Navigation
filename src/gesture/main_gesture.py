@@ -2,13 +2,15 @@
 
 import socket
 import sys
+import time
+
 import cv2
 
 import ev3_hand_detection as gesture
 
 # HOST INFO and establishing of client socket
-HOST = '192.168.0.116'
-PORT = 5001
+HOST = '192.168.1.2'
+PORT = 50000
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
@@ -19,7 +21,7 @@ def debug_print(*args, **kwargs):
 
 # sends the encoded commands to the server
 def send(cmd):
-    client_socket.sendall(bytes(cmd.encode('utf8')))
+    client_socket.sendall(bytes("#{}".format(cmd).encode('utf8')))
 
 
 # Main Method... duh :)
@@ -36,16 +38,15 @@ def main():
     # program; Sending closing signal to server
     while True:
         data = gesture.capture(cap)
-        if data != 'end':
-            send(data)
-            debug_print(data)
+        send(data)
+        debug_print(data)
+        if data == 'end':
             # data = client_socket.recv(1024)
-        else:
             cv2.destroyAllWindows()
-            send(data)
-            debug_print(data)
             client_socket.close()
             break
+
+    sys.exit(0)
 
 
 if __name__ == "__main__":
